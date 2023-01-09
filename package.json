@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/app.js",
   "bin": {
-    "search": "./dist/command.js"
+    "word-search": "./dist/command.js"
   },
   "scripts": {
     "start": "tsc && node dist/app.js",
