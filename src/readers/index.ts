@@ -12,46 +12,70 @@ const reader = readline.createInterface({
     input: process.stdin, output: process.stdout
 })
 
-const printFromJson = (path: string, term): boolean => {
-    const dataExists = readTermsDB(path, term);
-    if (dataExists.length > 0) {
-        utils.print(dataExists)
-        return true
+const printMemoryUsage = () => {
+    if (Config.debug) {
+        console.log('\nReading file line by line with readline done.');
+        const used = process.memoryUsage().heapUsed / 1024 / 1024;
+        console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB \n`);
     }
-    return false
 }
 
-const streamReader = async (path: string, term: string) => {
-        if (!printFromJson(path, term)) {
-            const occurings = [];
-            const reader = readline.createInterface({
-                input: fs.createReadStream(path),
-                crlfDelay: Infinity
-            });
+const printFromJson = (path: string, term): any => {
+    const dataExists = readTermsDB(path, term);
+    if (dataExists && dataExists.length > 0) {
+        utils.print(dataExists)
+        return dataExists;
+    }
+    return null
+}
 
-            reader.on('line', async (line) => {
-                const occurance = await FileReaderByLine(line, term);
-                if (occurance) occurings.push(occurance);
-            })
+const renderError = (occurings : string[], term: string) => {
+    if (occurings.length < 1) {
+        console.error(`\nTerm : ${term} is not found in following file.`)
+    }
+}
 
-            await evetns.once(reader, 'close')
+export const streamReader = async (path: string, term: string): Promise<any> => {
+    let data = printFromJson(path, term)
+    if (data === null) {
+        data = {};
+        const occurings = [];
+        const reader = readline.createInterface({
+            input: fs.createReadStream(path),
+            crlfDelay: Infinity
+        });
+
+        reader.on('line', async (line) => {
+            const occurance = await FileReaderByLine(line, term);
+            if (occurance) occurings.push(occurance);
+        })
+
+        renderError(occurings, term);
+        await evetns.once(reader, 'close')
+        if (occurings.length > 0) {
             createTermsDB(path, term, occurings);
-
-            if (Config.debug) {
-                console.log('Reading file line by line with readline done.');
-                const used = process.memoryUsage().heapUsed / 1024 / 1024;
-                console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
-            }
+            data[term] = occurings
         }
+        printMemoryUsage();
+    }
+    return data;
 }
 
-const searchFromFile = async (path:string, term:string, file:string) => {
-    if (!printFromJson(path, term)) {
+export const searchFromFile = async (path: string, term: string, file: string): Promise<any> => {
+
+    let data = printFromJson(path, term)
+    if (data === null) {
+        data = {};
         const occurings = await FileReaderbyMemory(term, file)
         utils.print(occurings)
-        createTermsDB(path, term, occurings)
+        if (occurings.length > 0) {
+            createTermsDB(path, term, occurings);
+            data[term] = occurings
+        }
+        renderError(occurings, term)
     }
-    return;
+    printMemoryUsage();
+    return data;
 }
 
 export async function readFromScreen(print: string, path: string = null, buffer: string = null) {

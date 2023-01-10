@@ -1,7 +1,7 @@
 import fs from "fs";
 import { jsonFilePath } from "../validators/validations";
 
-export const createTermsDB = async (file: string, term: string, occurings: string[]) => {
+export const createTermsDB = async (file: string, term: string, occurings: string[]): Promise<any> => {
     const data = readJsonFile(file) || {};
     data[term] = occurings;
 
@@ -10,6 +10,7 @@ export const createTermsDB = async (file: string, term: string, occurings: strin
     fs.writeFile(jfile, jsonString, error => {
         if (error) throw error;
     })
+    return data;
 }
 
 export const readTermsDB = (file: string, term: string): string[] => {

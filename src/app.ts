@@ -1,10 +1,11 @@
 import express from 'express';
-const app = express();
-const port = 3000;
+import { Config } from './config';
+import { searchRouter }   from './routes/Search';
 
-app.get('/', (req, res) => {
-  res.send('This is what it is....!');
-});
+const app = express();
+const port = Config.webPort;
+
+app.use("/search", searchRouter);
 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
