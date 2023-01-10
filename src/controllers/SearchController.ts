@@ -13,7 +13,8 @@ export const SearchController = {
 const processRequest = async (request: Request, response: Response) => {
     const query = request.query;
     if (Object.keys(query).length < 1 || !query["file"] || !query["term"]) {
-        response.send("Please include file and term.")
+        response.status(404).send("Please include file and term.");
+        return;
     }
     try {
         const inmemory = query["inmemory"];
@@ -22,17 +23,18 @@ const processRequest = async (request: Request, response: Response) => {
 
         let data: any;
         if (inmemory) {
-            const buffer = LoadFileInMemory(filename.toString());
+            const buffer = LoadFileInMemory(filename);
             data = await searchFromFile(filename, term, buffer)
         } else {
             data = await streamReader(filename, term)
         }
         if (JSON.stringify(data) === "{}") {
-            response.status(403).send(`Term :: ${term} is not found in the document provided.`)
+            response.status(403).send(`Term :: ${term} is not found in the document provided.`);
+            return;
         }
         response.send(data)
     } catch (error) {
-        console.error(error)
-        response.status(400).send(error)
+        console.log(error)
+        response.status(500);
     }
 }

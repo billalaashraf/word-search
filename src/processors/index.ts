@@ -2,14 +2,15 @@ import fs from "fs";
 import { sanitise } from "../validators/validations";
 
 export const FileReaderByLine = async (line: string, term: string): Promise<string> => {
-    return finder(line, term);
+    const answer = await finder(line, term);
+    return answer
 }
 
 export const FileReaderbyMemory = async (term: string, data: string): Promise<string[]> => {
     const lines = data.split("\n");
     const occurances = [];
     for (const line of lines) {
-        const occurance = finder(line, term);
+        const occurance = await finder(line, term);
         if (occurance) occurances.push(occurance)
     }
     return occurances;
@@ -24,7 +25,7 @@ export const LoadFileInMemory = (path: string): string => {
     }
 }
 
-const finder = (line: string, term: string): string => {
+const finder = async (line: string, term: string): Promise<string> => {
     let rt: string;
     const array = line.split(' ');
     const index = array.findIndex((element) => {

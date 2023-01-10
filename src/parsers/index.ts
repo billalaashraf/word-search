@@ -6,7 +6,7 @@ export const createTermsDB = async (file: string, term: string, occurings: strin
     data[term] = occurings;
 
     const jsonString = JSON.stringify(data);
-    const jfile = jsonFilePath(file)
+    const jfile = jsonFilePath(file);
     fs.writeFile(jfile, jsonString, error => {
         if (error) throw error;
     })
