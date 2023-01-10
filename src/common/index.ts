@@ -5,7 +5,7 @@ export const utils = {
     
     print: (arr: any[]) => {
         for (let item of arr) {
-            console.log(item)
+            console.log(`${item} \n`)
         }
     }
 }

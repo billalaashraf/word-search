@@ -3,6 +3,7 @@
 import { filePathValidator, sanitise } from "./validators/validations";
 import { program } from "@caporal/core";
 import { readFromScreen } from "./readers";
+import { LoadFileInMemory } from "./processors";
 
 
 
@@ -20,9 +21,24 @@ program
             return value;
         }
     },)
+    .argument("<inmemory>", "Load in memory", {
+        validator: /^true|false/, 
+        default: false
+    })
     .action(({ logger, args }) => {
-        logger.info("Reading: %s!", args.file.toString());
-        readFromScreen("input search term: ", args.file.toString())
+        const file = args.file.toString()
+        logger.info("Reading: %s!", file);
+        if (args.inmemory) {
+            try {
+                const buffer = LoadFileInMemory(file)
+                readFromScreen("input search term: ", file, buffer);
+            } catch (error) {
+                console.log(error);
+                process.exit()
+            }
+        } else {
+            readFromScreen("input search term: ", file)
+        }
     });
 
 program.run()
