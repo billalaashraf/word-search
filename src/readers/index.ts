@@ -29,16 +29,16 @@ const printFromJson = (path: string, term): any => {
     return null
 }
 
-const renderError = (occurings : string[], term: string) => {
+const renderError = (occurings: string[], term: string) => {
     if (occurings.length < 1) {
         console.error(`\nTerm : ${term} is not found in following file.`)
     }
 }
 
 export const streamReader = async (path: string, term: string): Promise<any> => {
-    let data = printFromJson(path, term)
-    if (data === null) {
-        data = {};
+    const json = printFromJson(path, term);
+    let data = {};
+    if (json === null) {
         const occurings = [];
         const reader = readline.createInterface({
             input: fs.createReadStream(path),
@@ -57,14 +57,14 @@ export const streamReader = async (path: string, term: string): Promise<any> => 
             data[term] = occurings
         }
         printMemoryUsage();
-    }
+    } else { data[term] = json }
     return data;
 }
 
 export const searchFromFile = async (path: string, term: string, file: string): Promise<any> => {
-
-    let data = printFromJson(path, term)
-    if (data === null) {
+    const json = printFromJson(path, term);
+    let data = {};
+    if (json === null) {
         data = {};
         const occurings = await FileReaderbyMemory(term, file)
         utils.print(occurings)
@@ -73,7 +73,7 @@ export const searchFromFile = async (path: string, term: string, file: string): 
             data[term] = occurings
         }
         renderError(occurings, term)
-    }
+    } else { data[term] = json }
     printMemoryUsage();
     return data;
 }

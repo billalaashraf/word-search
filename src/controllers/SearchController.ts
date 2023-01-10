@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+import e, { Request, Response } from "express"
 import path from "path";
 import { LoadFileInMemory } from "../processors";
 import { searchFromFile, streamReader } from "../readers";
@@ -19,16 +19,20 @@ const processRequest = async (request: Request, response: Response) => {
         const inmemory = query["inmemory"];
         const filename = query["file"].toString();
         const term = sanitise(query["term"].toString());
-        let data: any;
 
+        let data: any;
         if (inmemory) {
             const buffer = LoadFileInMemory(filename.toString());
             data = await searchFromFile(filename, term, buffer)
         } else {
             data = await streamReader(filename, term)
         }
+        if (JSON.stringify(data) === "{}") {
+            response.status(403).send(`Term :: ${term} is not found in the document provided.`)
+        }
         response.send(data)
     } catch (error) {
         console.error(error)
+        response.status(400).send(error)
     }
 }
