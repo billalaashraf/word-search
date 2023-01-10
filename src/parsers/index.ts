@@ -2,7 +2,7 @@ import fs from "fs";
 import { jsonFilePath } from "../validators/validations";
 
 export const createTermsDB = async (file: string, term: string, occurings: string[]) => {
-    let data = readJsonFile(file) || {};
+    const data = readJsonFile(file) || {};
     data[term] = occurings;
 
     const jsonString = JSON.stringify(data);
@@ -14,12 +14,11 @@ export const createTermsDB = async (file: string, term: string, occurings: strin
 
 export const readTermsDB = (file: string, term: string): string[] => {
     try {
-        let data = readJsonFile(file)
+        const data = readJsonFile(file)
         if (data && data[term]) {
             return data[term];
         }
-    } catch (error) { }
-    return [];
+    } catch (error) { return []; }
 }
 
 const readJsonFile = (file: string): any => {

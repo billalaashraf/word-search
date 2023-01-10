@@ -22,7 +22,6 @@ const printFromJson = (path: string, term): boolean => {
 }
 
 const streamReader = async (path: string, term: string) => {
-    try {
         if (!printFromJson(path, term)) {
             const occurings = [];
             const reader = readline.createInterface({
@@ -44,10 +43,6 @@ const streamReader = async (path: string, term: string) => {
                 console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
             }
         }
-
-    } catch (error) {
-        throw error
-    }
 }
 
 const searchFromFile = async (path:string, term:string, file:string) => {

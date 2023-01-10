@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { filePathValidator, sanitise } from "./validators/validations";
+import { filePathValidator } from "./validators/validations";
 import { program } from "@caporal/core";
 import { readFromScreen } from "./readers";
 import { LoadFileInMemory } from "./processors";

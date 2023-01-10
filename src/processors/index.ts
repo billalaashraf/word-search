@@ -8,7 +8,7 @@ export const FileReaderByLine = async (line: string, term: string): Promise<stri
 export const FileReaderbyMemory = async (term: string, data: string): Promise<string[]> => {
     const lines = data.split("\n");
     const occurances = [];
-    for (let line of lines) {
+    for (const line of lines) {
         const occurance = finder(line, term);
         if (occurance) occurances.push(occurance)
     }
